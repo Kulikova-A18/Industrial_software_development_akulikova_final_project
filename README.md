@@ -27,3 +27,81 @@
 ## Задание
 
 Задание для итогового проекта по программе располагается в [lms.bmstu.ru](https://lms.bmstu.ru/mod/assign/view.php?id=45972).
+
+## Запуск проекта
+
+### Быстрый старт
+
+```
+sudo ./run.sh
+```
+
+### Ручное управление контейнерами
+
+```
+# Остановить все контейнеры и удалить тома
+sudo docker-compose down -v
+
+# Запустить все сервисы в фоновом режиме
+sudo docker-compose up -d
+
+# Просмотр статуса контейнеров
+sudo docker-compose ps
+
+# Просмотр логов всех сервисов
+sudo docker-compose logs --tail=50
+
+# Просмотр логов конкретного сервиса
+sudo docker-compose logs zookeeper
+sudo docker-compose logs kafka
+sudo docker-compose logs orders
+sudo docker-compose logs payments
+sudo docker-compose logs gateway
+```
+
+### Тестирование API
+
+Установка утилит (если не установлены)
+```
+sudo apt-get install jq -y
+```
+
+Проверка работоспособности
+
+```
+# Проверка API Gateway
+curl -s http://localhost:8080/actuator/health | jq .
+
+# Создание аккаунта
+curl -X POST http://localhost:8080/api/v1/payments/accounts \
+  -H "X-User-Id: test-user" \
+  -H "Content-Type: application/json" | jq .
+
+# Пополнение баланса
+curl -X POST http://localhost:8080/api/v1/payments/accounts/top-up \
+  -H "X-User-Id: test-user" \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 1000}' | jq .
+
+# Проверка баланса
+curl -s http://localhost:8080/api/v1/payments/accounts/balance \
+  -H "X-User-Id: test-user" | jq .
+
+# Создание заказа
+curl -X POST http://localhost:8080/api/v1/orders \
+  -H "X-User-Id: test-user" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "product_type": "ARCHIVE",
+    "price": 100,
+    "payload": {
+      "aoi": "test-area",
+      "capture_date": "2024-01-01",
+      "sensor_type": "optical"
+    }
+  }' | jq .
+
+# Просмотр заказов
+curl -s http://localhost:8080/api/v1/orders \
+  -H "X-User-Id: test-user" | jq .
+```

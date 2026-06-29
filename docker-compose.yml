@@ -1,0 +1,166 @@
+services:
+  # PostgreSQL for Orders
+  orders-db:
+    image: postgres:15
+    container_name: orders-db
+    environment:
+      POSTGRES_DB: ordersdb
+      POSTGRES_USER: ordersuser
+      POSTGRES_PASSWORD: orderspass
+    ports:
+      - "5433:5432"
+    volumes:
+      - orders-data:/var/lib/postgresql/data
+    networks:
+      - orbita-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ordersuser -d ordersdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL for Payments
+  payments-db:
+    image: postgres:15
+    container_name: payments-db
+    environment:
+      POSTGRES_DB: paymentsdb
+      POSTGRES_USER: paymentsuser
+      POSTGRES_PASSWORD: paymentspass
+    ports:
+      - "5434:5432"
+    volumes:
+      - payments-data:/var/lib/postgresql/data
+    networks:
+      - orbita-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paymentsuser -d paymentsdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - orbita-network
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc -w 2 localhost 2181 | grep imok"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # Kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_JMX_PORT: 9999
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 6000
+    ports:
+      - "9092:9092"
+    networks:
+      - orbita-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Payments Service
+  payments-service:
+    build:
+      context: ./payments-service
+      dockerfile: Dockerfile
+    container_name: payments-service
+    depends_on:
+      payments-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://payments-db:5432/paymentsdb
+      SPRING_DATASOURCE_USERNAME: paymentsuser
+      SPRING_DATASOURCE_PASSWORD: paymentspass
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    networks:
+      - orbita-network
+    restart: unless-stopped
+
+  # Orders Service
+  orders-service:
+    build:
+      context: ./orders-service
+      dockerfile: Dockerfile
+    container_name: orders-service
+    depends_on:
+      orders-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://orders-db:5432/ordersdb
+      SPRING_DATASOURCE_USERNAME: ordersuser
+      SPRING_DATASOURCE_PASSWORD: orderspass
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    networks:
+      - orbita-network
+    restart: unless-stopped
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on:
+      payments-service:
+        condition: service_started
+      orders-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - orbita-network
+    restart: unless-stopped
+
+volumes:
+  orders-data:
+    driver: local
+  payments-data:
+    driver: local
+
+networks:
+  orbita-network:
+    driver: bridge

@@ -4,8 +4,6 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
 
 @Configuration
 public class GatewayConfig {
@@ -16,37 +14,13 @@ public class GatewayConfig {
                 .route("payments", r -> r
                         .path("/api/v1/payments/**")
                         .filters(f -> f
-                                .filter((exchange, chain) -> {
-                                    String userId = exchange.getRequest().getHeaders()
-                                            .getFirst("X-User-Id");
-                                    if (userId != null && !userId.isEmpty()) {
-                                        ServerWebExchange mutatedExchange = exchange.mutate()
-                                                .request(exchange.getRequest().mutate()
-                                                        .header("X-User-Id", userId)
-                                                        .build())
-                                                .build();
-                                        return chain.filter(mutatedExchange);
-                                    }
-                                    return chain.filter(exchange);
-                                })
+                                .addRequestHeader("X-User-Id", "${header.X-User-Id}")
                         )
                         .uri("http://payments-service:8081"))
                 .route("orders", r -> r
                         .path("/api/v1/orders/**")
                         .filters(f -> f
-                                .filter((exchange, chain) -> {
-                                    String userId = exchange.getRequest().getHeaders()
-                                            .getFirst("X-User-Id");
-                                    if (userId != null && !userId.isEmpty()) {
-                                        ServerWebExchange mutatedExchange = exchange.mutate()
-                                                .request(exchange.getRequest().mutate()
-                                                        .header("X-User-Id", userId)
-                                                        .build())
-                                                .build();
-                                        return chain.filter(mutatedExchange);
-                                    }
-                                    return chain.filter(exchange);
-                                })
+                                .addRequestHeader("X-User-Id", "${header.X-User-Id}")
                         )
                         .uri("http://orders-service:8082"))
                 .build();

@@ -2,10 +2,11 @@ package com.orbitamarket.payments.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
+import lombok.Builder;
 import java.util.UUID;
 
 @Data
+@Builder
 public class PaymentRequest {
     @JsonProperty("event_id")
     private UUID eventId;

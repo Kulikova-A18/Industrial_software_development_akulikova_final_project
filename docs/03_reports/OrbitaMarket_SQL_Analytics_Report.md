@@ -1,8 +1,8 @@
 # Отчет по выполнению SQL аналитики OrbitaMarket
 
-![sql1](./results/sql/sql1.png)
+![sql1](../results/sql/sql1.png)
 
-![sql2](./results/sql/sql2.png)
+![sql2](../results/sql/sql2.png)
 
 ## 1. Выполненные SQL-запросы
 
@@ -10,9 +10,10 @@
 
 #### Запрос 1.1: Кто и сколько купил
 
-Результат: 
+Результат:
+
 ```
- user_id | paid_orders_count | total_spent_geocredits | avg_order_amount | min_order_amount | max_order_amount 
+ user_id | paid_orders_count | total_spent_geocredits | avg_order_amount | min_order_amount | max_order_amount
 ---------+-------------------+------------------------+------------------+------------------+------------------
 (0 rows)
 ```
@@ -22,6 +23,7 @@
 #### Запрос 1.2: Детальная статистика по пользователям
 
 Результат:
+
 ```
  user_id              | total_orders | total_paid | total_failed | total_rejected | total_pending | paid_count | failed_count | rejected_count | pending_count | first_order_date           | last_order_date
 ----------------------+--------------+------------+--------------+----------------+---------------+------------+--------------+----------------+---------------+----------------------------+----------------------------
@@ -39,7 +41,6 @@
 - Общая сумма заказов: 1560 геокредитов
 - Средняя сумма заказа: 173.33 геокредита
 
-
 ### 1.2. Статистика платформы 02_platform_stats.sql
 
 #### Запрос 2.1: Общая статистика
@@ -47,12 +48,13 @@
 Результат:
 
 ```
- total_users | total_orders | paid_orders | total_revenue_geocredits | avg_paid_order_amount | failed_orders | rejected_orders | pending_orders | avg_order_value 
+ total_users | total_orders | paid_orders | total_revenue_geocredits | avg_paid_order_amount | failed_orders | rejected_orders | pending_orders | avg_order_value
 -------------+--------------+-------------+--------------------------+-----------------------+---------------+-----------------+----------------+-----------------
-           7 |            9 |           0 |                        0 |                       |             0 |               0 |              9 |                
+           7 |            9 |           0 |                        0 |                       |             0 |               0 |              9 |
 ```
 
 Анализ:
+
 - Всего пользователей: 7
 - Всего заказов: 9
 - Заказов в обработке: 9
@@ -63,7 +65,7 @@
 Результат:
 
 ```
- product_type | order_count | total_revenue | avg_price | min_price | max_price | unique_users | paid_count | failed_count | rejected_count 
+ product_type | order_count | total_revenue | avg_price | min_price | max_price | unique_users | paid_count | failed_count | rejected_count
 --------------+-------------+---------------+-----------+-----------+-----------+--------------+------------+--------------+----------------
 (0 rows)
 ```
@@ -73,8 +75,9 @@
 #### Запрос 2.3: Распределение статусов заказов
 
 Результат:
+
 ```
-     status      | order_count | percentage | total_amount |      avg_amount      
+     status      | order_count | percentage | total_amount |      avg_amount
 -----------------+-------------+------------+--------------+----------------------
  PAYMENT_PENDING |           9 |     100.00 |         1560 | 173.3333333333333333
 ```
@@ -88,7 +91,7 @@
 Результат:
 
 ```
- user_id | orders_count | total_spent | avg_order | last_order_date | product_types_used 
+ user_id | orders_count | total_spent | avg_order | last_order_date | product_types_used
 ---------+--------------+-------------+-----------+-----------------+--------------------
 (0 rows)
 ```
@@ -98,8 +101,9 @@
 #### Запрос 3.2: Пользователи с наибольшим количеством заказов
 
 Результат:
+
 ```
- user_id              | total_orders | total_spent |   avg_order_value    | paid_orders | failed_orders | rejected_orders |       last_activity        
+ user_id              | total_orders | total_spent |   avg_order_value    | paid_orders | failed_orders | rejected_orders |       last_activity
 ----------------------+--------------+-------------+----------------------+-------------+---------------+-----------------+----------------------------
  test-user-7dd24863   |            2 |         200 | 100.0000000000000000 |           0 |             0 |               0 | 2026-06-30 18:15:50.536042
  test-user-07c319ad   |            2 |         800 | 400.0000000000000000 |           0 |             0 |               0 | 2026-06-30 18:15:53.472732
@@ -111,6 +115,7 @@
 ```
 
 Анализ:
+
 - Наибольшее количество заказов: 2
 - Максимальная сумма: 800 геокредитов
 
@@ -119,8 +124,9 @@
 #### Запрос 4.1: Ежедневная статистика
 
 Результат:
+
 ```
- order_date | total_orders | total_amount | unique_users | paid_count | revenue | failed_count | rejected_count |   avg_order_amount   
+ order_date | total_orders | total_amount | unique_users | paid_count | revenue | failed_count | rejected_count |   avg_order_amount
 ------------+--------------+--------------+--------------+------------+---------+--------------+----------------+----------------------
  2026-06-30 |            9 |         1560 |            7 |          0 |       0 |            0 |              0 | 173.3333333333333333
 ```
@@ -130,8 +136,9 @@
 #### Запрос 4.2: Ежемесячная статистика
 
 Результат:
+
 ```
-  month  | total_orders | total_amount | unique_users | paid_count | revenue | failed_count |   avg_order_amount   
+  month  | total_orders | total_amount | unique_users | paid_count | revenue | failed_count |   avg_order_amount
 ---------+--------------+--------------+--------------+------------+---------+--------------+----------------------
  2026-06 |            9 |         1560 |            7 |          0 |       0 |            0 | 173.3333333333333333
 ```
@@ -143,9 +150,9 @@
 Результат:
 
 ```
- processed_orders | avg_seconds | min_seconds | max_seconds | median_seconds | avg_order_price | total_value 
+ processed_orders | avg_seconds | min_seconds | max_seconds | median_seconds | avg_order_price | total_value
 ------------------+-------------+-------------+-------------+----------------+-----------------+-------------
-                0 |             |             |             |                |                 |            
+                0 |             |             |             |                |                 |
 ```
 
 Нет обработанных заказов
@@ -155,7 +162,7 @@
 Результат:
 
 ```
- failure_reason | count | affected_users | total_amount | avg_amount | first_occurrence | last_occurrence | payment_failed_count | rejected_count 
+ failure_reason | count | affected_users | total_amount | avg_amount | first_occurrence | last_occurrence | payment_failed_count | rejected_count
 ----------------+-------+----------------+--------------+------------+------------------+-----------------+----------------------+----------------
 (0 rows)
 ```
@@ -171,7 +178,7 @@
 Результат:
 
 ```
-         check_name          | issue_count 
+         check_name          | issue_count
 -----------------------------+-------------
  orders_with_negative_price  |           0
  orders_without_user_id      |           0
@@ -187,12 +194,13 @@
 Результат:
 
 ```
- total_accounts | total_balance_geocredits |     avg_balance      | max_balance | min_balance | zero_balance_accounts | active_accounts 
+ total_accounts | total_balance_geocredits |     avg_balance      | max_balance | min_balance | zero_balance_accounts | active_accounts
 ----------------+--------------------------+----------------------+-------------+-------------+-----------------------+-----------------
              11 |                     4550 | 413.6363636363636364 |        1000 |           0 |                     5 |               6
 ```
 
 Анализ:
+
 - Всего счетов: 11
 - Общий баланс: 4550 геокредитов
 - Средний баланс: 413.64 геокредита
@@ -201,8 +209,9 @@
 - Пустых счетов (баланс = 0): 5
 
 Топ пользователей по балансу:
+
 ```
- user_id              | balance | balance_level 
+ user_id              | balance | balance_level
 ----------------------+---------+---------------
  test-user-1782843186 |    1000 | Premium
  test-user-07c319ad   |    1000 | Premium
@@ -230,20 +239,19 @@ LINE 12: LEFT JOIN accounts a ON o.user_id = a.user_id
 
 Запрос не выполнен, таблица accounts находится в другой базе данных. базы данных изолированы.
 
-
 ### 1.10. Статистика для презентации 10_presentation_stats.sql
 
 Результат:
 
 ```
-           metric           |   value    
+           metric           |   value
 ----------------------------+------------
  Total Users                | 7
  Total Orders               | 9
  Total Revenue (geocredits) | 0
  Successful Payments        | 0/9 (0.0%)
  Average Order Value        | 0.00
- Top Product Type           | 
+ Top Product Type           |
 ```
 
 Краткая сводка для презентации проекта

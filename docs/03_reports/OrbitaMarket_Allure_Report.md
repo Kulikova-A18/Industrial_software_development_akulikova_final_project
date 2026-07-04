@@ -12,12 +12,12 @@
 
 ## 2. Детализация ошибок
 
-![allure2](./results/allure/allure2.png)
+![allure2](../results/allure/allure2.png)
 
 ## 3. Результаты по категориям
 
-![allure3](./results/allure/allure3.png)
+![allure3](../results/allure/allure3.png)
 
 ## 4. Результаты сценариев
 
-![allure4](./results/allure/allure4.png)
+![allure4](../results/allure/allure4.png)

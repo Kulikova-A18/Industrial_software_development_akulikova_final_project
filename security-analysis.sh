@@ -24,13 +24,13 @@ check_cmd semgrep
 check_cmd gitleaks
 check_cmd jq
 
-mkdir -p security-reports
+mkdir -p docs/03_reports/security-reports
 
 # Gitleaks
-gitleaks detect --source . --report-format json --report-path security-reports/gitleaks.json
+gitleaks detect --source . --report-format json --report-path docs/03_reports/security-reports/gitleaks.json
 
 # Semgrep (rules from https://github.com/AuroraProudmoore/java-audit-skill/tree/main)
-semgrep scan --json --output security-reports/semgrep.json --include '*.java' \
+semgrep scan --json --output docs/03_reports/security-reports/semgrep.json --include '*.java' \
   --config ./rules/semgrep/java-api-security.yaml \
   --config ./rules/semgrep/java-config.yaml \
   --config ./rules/semgrep/java-crypto.yaml \
